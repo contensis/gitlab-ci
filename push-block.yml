@@ -1,0 +1,90 @@
+variables:
+  cli_splash:
+    description: 'Optional: show welcome splash screen. Default: true'
+    value: 'true'
+  cli_version:
+    description: 'Optional: pull cli from specified tag. Default: release'
+    value: release
+  alias:
+    description: 'The Contensis cloud alias to connect to'
+    value: ''
+  project_id:
+    description: 'The id of the project to connect to'
+    value: website
+  client_id:
+    description: 'Client id to connect to the supplied alias'
+    value: $CONTENSIS_CLIENT_ID
+  shared_secret:
+    description: 'Shared secret to use with the supplied client id'
+    value: $CONTENSIS_SHARED_SECRET
+  block_id:
+    description: 'The id of the block to push to'
+    value: ''
+  image_uri:
+    description: 'The repository uri of the container image to build the block from'
+    value: '$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME/app:latest'
+  auto_release:
+    description: 'Whether to release the block upon successful push'
+    value: 'false'
+  tag_repo:
+    description: 'Whether to push a tag to the git repo upon successful block push'
+    value: 'false'
+  git_token:
+    description: 'The git token from secrets to use when tagging the git repo upon successful block push'
+    value: $GITLAB_ACCESS_TOKEN
+
+push-to-contensis:
+  stage: push-block
+  image: ghcr.io/contensis/node-cli/main/app:$cli_version
+  before_script:
+    - echo "Creating output.json to capture command output"
+    - touch output.json
+  script:
+    - if [ "$auto_release" == "true" ]; then RELEASE_FLAG="--release"; else RELEASE_FLAG=""; fi
+    - RUN_COMMAND_CONNECT="contensis connect $alias --project-id $project_id --client-id $client_id --shared-secret $shared_secret"
+    - RUN_COMMAND_PUSH="contensis push block $block_id $image_uri $RELEASE_FLAG"
+    - RUN_COMMAND_AIO="contensis push block $block_id $image_uri -a $alias -p $project_id -id $client_id -s $shared_secret $RELEASE_FLAG"
+    - echo $RUN_COMMAND_CONNECT && echo $RUN_COMMAND_PUSH
+    - if [ "$cli_splash" == "true" ]; then contensis; fi
+    - $RUN_COMMAND_CONNECT && $RUN_COMMAND_PUSH --output output.json
+  after_script:
+    # Capture a stringified JSON variable from output.json
+    - OUTPUT=$(echo "`cat output.json`" | tr "\n" " " | jq -sR .)
+    - echo "command_output=$OUTPUT" >> cli.env
+    - echo \$command_output - $OUTPUT
+    # Parse stringified JSON and query values by path using `jq`
+    - JSON=$(echo $OUTPUT | jq '. | fromjson | .')
+    - VERSION_NO=$(echo $JSON | jq .version.versionNo)
+    # Set $block_version var to pass on to the next job
+    - echo "\$block_version is $VERSION_NO"
+    - echo "block_version=$VERSION_NO" >> cli.env
+    # Echo var set by caller of this job into the next job
+    - echo \$tag_repo is $tag_repo
+    - echo "tag_repo=$tag_repo" >> cli.env
+  artifacts:
+    reports:
+      dotenv: cli.env
+
+tag-block-version:
+  stage: push-block
+  needs: ['push-to-contensis']
+  rules:
+    - if: '$CI_COMMIT_TAG == null'
+  script:
+    - echo \$tag_repo is $tag_repo and \$block_version is $block_version
+    - >
+      if [ "$tag_repo" == "true" ]; then
+        apk add git
+        TAG=v$block_version
+        echo "Tagging commit with \"$TAG\""
+        git config user.email "${GITLAB_USER_EMAIL}"
+        git config user.name "${GITLAB_USER_NAME}"
+        git remote set-url origin https://gitlab-ci-token:${git_token}@$(echo $CI_PROJECT_URL | sed 's/https:\/\///')
+        git tag $TAG --force
+        git push origin $TAG
+        echo "Git tag added successfully"
+        echo "git_tag=$TAG" >> tag.env
+      else
+        echo \$tag_repo is false, not tagging
+        echo "git_tag=false" >> tag.env
+      fi
