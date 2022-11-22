@@ -14,7 +14,7 @@ Your `.gitlab-ci.yml` file may look something like this
 image: gitlab.zengenti.com:4567/ops/zengenti-dind:latest
 
 include:
-  - remote: https://gitlab.zengenti.com/n.flatley/block-push-ci/-/blob/main/push-block.yml
+  - remote: "https://gitlab.zengenti.com/n.flatley/block-push-ci/raw/main/push-block.yml"
 
 stages:
   - latest-build
