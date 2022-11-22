@@ -1,36 +1,39 @@
+stages:
+  - push-block
+
 variables:
   cli_splash:
-    description: 'Optional: show welcome splash screen. Default: true'
-    value: 'true'
+    description: "Optional: show welcome splash screen. Default: true"
+    value: "true"
   cli_version:
-    description: 'Optional: pull cli from specified tag. Default: release'
+    description: "Optional: pull cli from specified tag. Default: release"
     value: release
   alias:
-    description: 'The Contensis cloud alias to connect to'
-    value: ''
+    description: "The Contensis cloud alias to connect to"
+    value: ""
   project_id:
-    description: 'The id of the project to connect to'
+    description: "The id of the project to connect to"
     value: website
   client_id:
-    description: 'Client id to connect to the supplied alias'
+    description: "Client id to connect to the supplied alias"
     value: $CONTENSIS_CLIENT_ID
   shared_secret:
-    description: 'Shared secret to use with the supplied client id'
+    description: "Shared secret to use with the supplied client id"
     value: $CONTENSIS_SHARED_SECRET
   block_id:
-    description: 'The id of the block to push to'
-    value: ''
+    description: "The id of the block to push to"
+    value: ""
   image_uri:
-    description: 'The repository uri of the container image to build the block from'
-    value: '$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME/app:latest'
+    description: "The repository uri of the container image to build the block from"
+    value: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME/app:latest"
   auto_release:
-    description: 'Whether to release the block upon successful push'
-    value: 'false'
+    description: "Whether to release the block upon successful push"
+    value: "false"
   tag_repo:
-    description: 'Whether to push a tag to the git repo upon successful block push'
-    value: 'false'
+    description: "Whether to push a tag to the git repo upon successful block push"
+    value: "false"
   git_token:
-    description: 'The git token from secrets to use when tagging the git repo upon successful block push'
+    description: "The git token from secrets to use when tagging the git repo upon successful block push"
     value: $GITLAB_ACCESS_TOKEN
 
 push-to-contensis:
@@ -67,9 +70,9 @@ push-to-contensis:
 
 tag-block-version:
   stage: push-block
-  needs: ['push-to-contensis']
+  needs: ["push-to-contensis"]
   rules:
-    - if: '$CI_COMMIT_TAG == null'
+    - if: "$CI_COMMIT_TAG == null"
   script:
     - echo \$tag_repo is $tag_repo and \$block_version is $block_version
     - >
