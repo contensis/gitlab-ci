@@ -34,7 +34,7 @@ variables:
     value: "false"
   git_token:
     description: "The git token from secrets to use when tagging the git repo upon successful block push"
-    value: $GITLAB_ACCESS_TOKEN
+    value: $CI_JOB_TOKEN
 
 push-to-contensis:
   stage: push-block
@@ -64,6 +64,7 @@ push-to-contensis:
     # Echo var set by caller of this job into the next job
     - echo \$tag_repo is $tag_repo
     - echo "tag_repo=$tag_repo" >> cli.env
+    - echo "git_token=$git_token" >> cli.env
   artifacts:
     reports:
       dotenv: cli.env
