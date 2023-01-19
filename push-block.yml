@@ -38,6 +38,8 @@ variables:
 
 push-to-contensis:
   stage: push-block
+  except:
+    - tags
   image: ghcr.io/contensis/node-cli/main/app:$cli_version
   before_script:
     - echo "Creating output.json to capture command output"
