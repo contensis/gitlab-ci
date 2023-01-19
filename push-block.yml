@@ -26,7 +26,7 @@ variables:
   image_uri:
     description: "The repository uri of the container image to build the block from"
     value: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME/app:latest"
-  auto_release:
+  release:
     description: "Whether to release the block upon successful push"
     value: "false"
   tag_repo:
@@ -43,7 +43,7 @@ push-to-contensis:
     - echo "Creating output.json to capture command output"
     - touch output.json
   script:
-    - if [ "$auto_release" == "true" ]; then RELEASE_FLAG="--release"; else RELEASE_FLAG=""; fi
+    - if [ "$release" == "true" ]; then RELEASE_FLAG="--release"; else RELEASE_FLAG=""; fi
     - RUN_COMMAND_CONNECT="contensis connect $alias --project-id $project_id --client-id $client_id --shared-secret $shared_secret"
     - RUN_COMMAND_PUSH="contensis push block $block_id $image_uri $RELEASE_FLAG"
     - RUN_COMMAND_AIO="contensis push block $block_id $image_uri -a $alias -p $project_id -id $client_id -s $shared_secret $RELEASE_FLAG"
