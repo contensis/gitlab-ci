@@ -1,4 +1,4 @@
-include: cli-base.yml
+include: 'https://gitlab.zengenti.com/ops/contensis-ci/-/raw/main/cli-base.yml'
 
 stages:
   - release-block
