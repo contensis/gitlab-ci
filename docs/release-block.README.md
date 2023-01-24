@@ -4,6 +4,9 @@ Include this pipeline in your own `.gitlab-ci.yml` allowing you to release a blo
 
 The pipeline will be triggered only when a tag has been added to your git repo with the prefix `release-*` e.g. `release-v1.0.1`
 
+> **Note**
+> It is possible to "auto release" with every block push by adding `release: 'true'` to the variables in your `push-block` jobs
+
 ## Inputs
 
 Uses the same variables as the equivalent GitHub Action (except variables here use underscores instead of dashes) - docs: https://github.com/contensis/block-release
@@ -41,13 +44,16 @@ push-to-contensis:
   only:
     - master
   variables:
-    block_id: name-of-block
-    image_uri: $APP_IMAGE:latest
     alias: example-dev
     project_id: website
+    block_id: name-of-block
+    image_uri: $APP_IMAGE:latest
 
+# Releasing the block (with a `release-*` tag)
 release-contensis-block:
   stage: release-block
   variables:
+    alias: example-dev
+    project_id: website
     block_id: name-of-block
 ```

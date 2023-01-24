@@ -2,6 +2,6 @@
 
 Include reusable workflows in your own `.gitlab-ci.yml` allowing you to perform CI actions with Contensis
 
-## - [Push block](./push-block.README.md)
+- [Push block](./docs/push-block.README.md)
 
-## - [Release block](./release-block.README.md)
+- [Release block](./docs/release-block.README.md)
