@@ -37,15 +37,33 @@ push-to-contensis:
   only:
     - master
   variables:
-    block_id: name-of-block
-    auto_release: "true"
-    image_uri: $APP_IMAGE:latest
     alias: example-dev
     project_id: website
+    block_id: name-of-block
+    image_uri: $APP_IMAGE:latest
+    release: "true"
     client_id: $CONTENSIS_CLIENT_ID # Create a CI/CD Variable called CONTENSIS_CLIENT_ID and paste your id
     shared_secret: $CONTENSIS_SHARED_SECRET # Create a CI/CD Variable called CONTENSIS_SHARED_SECRET and paste your secret
     tag_repo: "true" # git_token is required if this is 'true'
     # First create a Project Access Token (access: api, read_repository) and copy it
     # Then create a CI/CD Variable called GITLAB_ACCESS_TOKEN and paste the token
     git_token: $GITLAB_ACCESS_TOKEN
+```
+
+## Pushing to multiple environments
+
+Ensure the `push-to-contensis` job is in place as above
+
+Add all of the subsequent "push" jobs you require following this example
+
+```yml
+push-to-contensis-dev:
+  extends: push-to-contensis
+  stage: push-block
+  variables:
+    alias: example-dev
+    project_id: website
+    block_id: name-of-block
+    image_uri: $APP_IMAGE:latest
+    release: "true"
 ```
