@@ -1,0 +1,33 @@
+
+variables:
+  cli_splash:
+    description: "Optional: show welcome splash screen. Default: true"
+    value: "true"
+  cli_image:
+    description: "Optional: pull cli from specified uri. Default: ghcr.io/contensis/node-cli/main/app"
+    value: ghcr.io/contensis/node-cli/main/app
+  cli_version:
+    description: "Optional: pull cli from specified tag. Default: release"
+    value: release
+  alias:
+    description: "The Contensis cloud alias to connect to"
+    value: ""
+  project_id:
+    description: "The id of the project to connect to"
+    value: website
+  client_id:
+    description: "Client id to connect to the supplied alias"
+    value: $CONTENSIS_CLIENT_ID
+  shared_secret:
+    description: "Shared secret to use with the supplied client id"
+    value: $CONTENSIS_SHARED_SECRET
+
+
+.cli-template:
+  image: $cli_image:$cli_version
+  before_script:
+    - echo "Creating output.json to capture command output"
+    - touch output.json
+  artifacts:
+    reports:
+      dotenv: cli.env

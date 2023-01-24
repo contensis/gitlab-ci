@@ -1,0 +1,49 @@
+include: cli-base.yml
+
+stages:
+  - release-block
+
+variables:
+  block_id:
+    description: "The id of the block to push to"
+    value: ""
+  block_version:
+    description: "Optional: The block version number to release. Default: latest"
+    value: "latest"
+
+release-contensis-block:
+  stage: release-block
+  extends: .cli-template
+  only:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_TAG =~ /^release-.*$/
+  except:
+    - branches
+  # image: ghcr.io/contensis/node-cli/main/app:$cli_version
+  # before_script:
+  #   - echo "Creating output.json to capture command output"
+  #   - touch output.json
+  script:
+    - if [ "$release" == "true" ]; then RELEASE_FLAG="--release"; else RELEASE_FLAG=""; fi
+    - RUN_COMMAND_CONNECT="contensis connect $alias --project-id $project_id --client-id $client_id --shared-secret $shared_secret"
+    - RUN_COMMAND_EXEC="contensis execute block action release $block_id $block_version"
+    - RUN_COMMAND_AIO="contensis execute block action release $block_id $block_version -a $alias -p $project_id -id $client_id -s $shared_secret $RELEASE_FLAG"
+    - echo $RUN_COMMAND_CONNECT && echo $RUN_COMMAND_EXEC
+    - if [ "$cli_splash" == "true" ]; then contensis; fi
+    - $RUN_COMMAND_CONNECT && $RUN_COMMAND_EXEC --output output.json
+  after_script:
+    # Capture a stringified JSON variable from output.json
+    - OUTPUT=$(echo "`cat output.json`" | tr "\n" " " | jq -sR .)
+    - echo "command_output=$OUTPUT" >> cli.env
+    - echo \$command_output - $OUTPUT
+    # Parse stringified JSON and query values by path using `jq`
+    - JSON=$(echo $OUTPUT | jq '. | fromjson | .')
+    - BLOCK_STATUS=$(echo $JSON | jq .[0].status)
+    # Set $block_version var to pass on to any next job
+    - echo "\$block_status is $BLOCK_STATUS"
+    - echo "block_status=$BLOCK_STATUS" >> cli.env
+  # artifacts:
+  #   reports:
+  #     dotenv: cli.env
