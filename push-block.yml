@@ -60,7 +60,7 @@ tag-block-version:
   needs:
     - push-to-contensis
   except:
-    - refs:
+    refs:
         - main
         - master
     - tags
