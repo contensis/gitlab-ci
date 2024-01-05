@@ -21,7 +21,7 @@ release-contensis-block:
       - $CI_COMMIT_TAG =~ /^release-.*$/
   except:
     - branches
-  # image: ghcr.io/contensis/node-cli/main/app:$cli_version
+  # image: ghcr.io/contensis/cli/main/app:$cli_version
   # before_script:
   #   - echo "Creating output.json to capture command output"
   #   - touch output.json

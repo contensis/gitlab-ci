@@ -4,8 +4,8 @@ variables:
     description: "Optional: show welcome splash screen. Default: true"
     value: "true"
   cli_image:
-    description: "Optional: pull cli from specified uri. Default: ghcr.io/contensis/node-cli/main/app"
-    value: ghcr.io/contensis/node-cli/main/app
+    description: "Optional: pull cli from specified uri. Default: ghcr.io/contensis/cli/main/app"
+    value: ghcr.io/contensis/cli/main/app
   cli_version:
     description: "Optional: pull cli from specified tag. Default: release"
     value: release
