@@ -1,4 +1,4 @@
-include: 'https://gitlab.zengenti.com/ops/contensis-ci/-/raw/main/cli-base.yml'
+include: "https://gitlab.zengenti.com/ops/contensis-ci/-/raw/main/cli-base.yml"
 
 stages:
   - push-block
@@ -28,8 +28,10 @@ variables:
 
 push-to-contensis:
   stage: push-block
-  except:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
   image: ghcr.io/contensis/cli/main/app:$cli_version
   before_script:
     - echo "Creating output.json to capture command output"
@@ -66,17 +68,16 @@ tag-block-version:
   stage: push-block
   needs:
     - push-to-contensis
-  only:
-    refs:
-      - main
-      - master
-  except:
-    refs:
-      - tags
-      - schedules
-  # rules:
-  #   - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG == null
-  #   - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TAG == null
+  rules:
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
   script:
     - echo \$tag_repo is $tag_repo and \$block_version is $block_version
     - >
