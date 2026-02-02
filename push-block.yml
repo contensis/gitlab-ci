@@ -13,6 +13,12 @@ variables:
   release:
     description: "Whether to release the block upon successful push"
     value: "false"
+  make_live:
+    description: "Whether to make the block live upon successful push"
+    value: "false"
+  branch:
+    description: "The branch name in Contensis to push the block to"
+    value: $CI_COMMIT_REF_NAME
   tag_repo:
     description: "Whether to push a tag to the git repo upon successful block push"
     value: "false"
@@ -30,9 +36,10 @@ push-to-contensis:
     - touch output.json
   script:
     - if [ "$release" == "true" ]; then RELEASE_FLAG="--release"; else RELEASE_FLAG=""; fi
+    - if [ "$make_live" == "true" ]; then MAKE_LIVE_FLAG="--make-live"; else MAKE_LIVE_FLAG=""; fi
     - RUN_COMMAND_CONNECT="contensis connect $alias --project-id $project_id --client-id $client_id --shared-secret $shared_secret"
-    - RUN_COMMAND_PUSH="contensis push block $block_id $image_uri $RELEASE_FLAG"
-    - RUN_COMMAND_AIO="contensis push block $block_id $image_uri -a $alias -p $project_id -id $client_id -s $shared_secret $RELEASE_FLAG"
+    - RUN_COMMAND_PUSH="contensis push block $block_id $image_uri $branch $RELEASE_FLAG $MAKE_LIVE_FLAG"
+    - RUN_COMMAND_AIO="contensis push block $block_id $image_uri $branch -a $alias -p $project_id -id $client_id -s $shared_secret $RELEASE_FLAG $MAKE_LIVE_FLAG"
     - echo $RUN_COMMAND_CONNECT && echo $RUN_COMMAND_PUSH
     - if [ "$cli_splash" == "true" ]; then contensis; fi
     - $RUN_COMMAND_CONNECT && $RUN_COMMAND_PUSH --output output.json

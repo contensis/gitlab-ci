@@ -37,10 +37,10 @@ push-to-contensis:
   only:
     - master
   variables:
-    alias: example-dev
+    alias: example
     project_id: website
     block_id: name-of-block
-    image_uri: $APP_IMAGE:latest
+    image_uri: $APP_IMAGE:build-$CI_PIPELINE_IID
     release: "true"
     client_id: $CONTENSIS_CLIENT_ID # Create a CI/CD Variable called CONTENSIS_CLIENT_ID and paste your id
     shared_secret: $CONTENSIS_SHARED_SECRET # Create a CI/CD Variable called CONTENSIS_SHARED_SECRET and paste your secret
@@ -64,6 +64,6 @@ push-to-contensis-dev:
     alias: example-dev
     project_id: website
     block_id: name-of-block
-    image_uri: $APP_IMAGE:latest
+    image_uri: $APP_IMAGE:build-$CI_PIPELINE_IID
     release: "true"
 ```
