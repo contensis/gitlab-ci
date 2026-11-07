@@ -1,4 +1,4 @@
-include: "https://gitlab.zengenti.com/ops/contensis-ci/-/raw/main/cli-base.yml"
+include: "https://raw.githubusercontent.com/contensis/gitlab-ci/v1.0.0/cli-base.yml"
 
 stages:
   - push-block

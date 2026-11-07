@@ -20,8 +20,8 @@ image: gitlab.zengenti.com:4567/ops/zengenti-dind:latest
 
 # Include the release-block pipeline
 include:
-  - "https://gitlab.zengenti.com/ops/contensis-ci/-/raw/main/push-block.yml"
-  - "https://gitlab.zengenti.com/ops/contensis-ci/-/raw/main/release-block.yml"
+  - "https://raw.githubusercontent.com/contensis/gitlab-ci/v1/push-block.yml"
+  - "https://raw.githubusercontent.com/contensis/gitlab-ci/v1/release-block.yml"
 
 # Add a stage called release-block to run after your project build
 stages:
