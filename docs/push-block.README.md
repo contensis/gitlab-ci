@@ -15,7 +15,7 @@ image: gitlab.zengenti.com:4567/ops/zengenti-dind:latest
 
 # Include the push-block pipeline
 include:
-  - remote: "https://raw.githubusercontent.com/contensis/gitlab-ci/v1/push-block.yml"
+  - remote: "https://cdn.jsdelivr.net/gh/contensis/gitlab-ci@1/push-block.yml"
 
 # Add a stage called push-block to run after your project build
 stages:

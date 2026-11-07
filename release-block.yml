@@ -1,4 +1,4 @@
-include: 'https://raw.githubusercontent.com/contensis/gitlab-ci/v1.0.0/cli-base.yml'
+include: 'https://cdn.jsdelivr.net/gh/contensis/gitlab-ci@1.0.1/cli-base.yml'
 
 stages:
   - release-block
